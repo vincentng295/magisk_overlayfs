@@ -2,8 +2,6 @@ MODDIR="${0%/*}"
 
 set -o standalone
 
-export MAGISKTMP="$(magisk --path)"
-
 chmod 777 "$MODDIR/overlayfs_system"
 
 OVERLAYDIR="/data/adb/overlay"
@@ -97,11 +95,6 @@ fi
 # overlay_system <writeable-dir>
 . "$MODDIR/mode.sh"
 "$MODDIR/overlayfs_system" "$OVERLAYMNT" | tee -a /cache/overlayfs.log
-
-if [ ! -z "$MAGISKTMP" ]; then
-    mkdir -p "$MAGISKTMP/overlayfs_mnt"
-    mount --bind "$OVERLAYMNT" "$MAGISKTMP/overlayfs_mnt"
-fi
 
 
 umount -l "$OVERLAYMNT"

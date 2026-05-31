@@ -190,23 +190,9 @@ int main(int argc, const char **argv) {
     const char *OVERLAY_MODE_env = xgetenv("OVERLAY_MODE");
     const char *OVERLAY_LEGACY_MOUNT_env = xgetenv("OVERLAY_LEGACY_MOUNT");
     const char *OVERLAYLIST_env = xgetenv("OVERLAYLIST");
-    const char *MAGISKTMP_env = xgetenv("MAGISKTMP");
 
     if (OVERLAYLIST_env == nullptr) OVERLAYLIST_env = "";
     int OVERLAY_MODE = (OVERLAY_MODE_env)? atoi(OVERLAY_MODE_env) : 0;
-
-    const char *mirrors = nullptr;
-    if (!str_empty(MAGISKTMP_env)) {
-        // use strdup as std::string, memory is automatically managed by the class and released when the string object goes out of scope
-        mirrors = strdup(string(string(MAGISKTMP_env) + "/.magisk/mirror").data());
-        if (stat(mirrors, &z) != 0 || !S_ISDIR(z.st_mode)) {
-            free((void*)mirrors);    
-            mirrors = nullptr;
-        }
-    }
-    if (mirrors) {
-        LOGD("Magisk mirrors path is %s\n", mirrors);
-    }
 
     // list of directories should be mounted!
     std::vector<string> mount_list;
@@ -472,7 +458,7 @@ int main(int argc, const char **argv) {
             LOGE("unshare mount failed: [%s]\n", info.data());
         mounted.emplace_back(info);
     }
-    goto inject_mirrors;
+    goto finally;
 
     subtree_mounts:
     for (auto &info : mount_list) {
@@ -499,18 +485,7 @@ int main(int argc, const char **argv) {
         }
     }
 
-    inject_mirrors: // inject mount back to to magisk mirrors so Magic mount won't override it
-    if (mirrors != nullptr) {
-        LOGI("** Loading overlayfs mirrors\n");
-        for (auto &info : mounted) {
-            std::string mirror_dir = string(mirrors) + info;
-            if (access(mirror_dir.data(), F_OK) == 0) {
-                xmount(info.data(), mirror_dir.data(), nullptr, MS_BIND | MS_REC, nullptr);
-                if (!unshare_mount(mirror_dir.data()))
-                    LOGE("unshare mount failed: [%s]\n", mirror_dir.data());
-            }
-        }
-    }
+    finally:
     LOGI("mount done!\n");
     CLEANUP
 

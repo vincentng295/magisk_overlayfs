@@ -1,20 +1,52 @@
 SKIPUNZIP=1
 
+MIN_KSU_VERSION=10940
+MIN_KSUD_VERSION=11575
+MIN_MAGISK_VERSION=27000
+MIN_APATCH_VERSION=10700
+
 if [ "$BOOTMODE" ] && [ "$KSU" ]; then
-    ui_print "- Installing from KernelSU app"
-    ui_print "- KernelSU version: $KSU_KERNEL_VER_CODE (kernel) + $KSU_VER_CODE (ksud)"
-    ui_print "- Please note that KernelSU modules mount will make"
-    ui_print "  your system partitions unable to mount as rw"
-    ui_print "- If you are using KernelSU, "
-    ui_print "  please unmount all ksu overlayfs"
-    ui_print "  when you want to modify system partitions"
-elif [ "$BOOTMODE" ] && [ "$MAGISK_VER_CODE" ]; then
-    ui_print "- Installing from Magisk app"
-else
+  ui_print "- Installing from KernelSU app"
+  ui_print "- KernelSU version: $KSU_KERNEL_VER_CODE (kernel) + $KSU_VER_CODE (ksud)"
+  if ! [ "$KSU_KERNEL_VER_CODE" ] || [ "$KSU_KERNEL_VER_CODE" -lt "$MIN_KSU_VERSION" ]; then
     ui_print "*********************************************************"
-    ui_print "! Install from recovery is not supported"
-    ui_print "! Please install from KernelSU or Magisk app"
+    ui_print "! KernelSU version is too old!"
+    ui_print "! Please update KernelSU to latest version"
     abort    "*********************************************************"
+  fi
+  if ! [ "$KSU_VER_CODE" ] || [ "$KSU_VER_CODE" -lt "$MIN_KSUD_VERSION" ]; then
+    ui_print "*********************************************************"
+    ui_print "! ksud version is too old!"
+    ui_print "! Please update KernelSU Manager to latest version"
+    abort    "*********************************************************"
+  fi
+  if [ "$(which magisk)" ]; then
+    ui_print "*********************************************************"
+    ui_print "! Multiple root implementation is NOT supported!"
+    ui_print "! Please uninstall Magisk before installing this module"
+    abort    "*********************************************************"
+  fi
+elif [ "$BOOTMODE" ] && [ "$APATCH" ]; then
+  ui_print "- Installing from APatch app"
+  if ! [ "$APATCH_VER_CODE" ] || [ "$APATCH_VER_CODE" -lt "$MIN_APATCH_VERSION" ]; then
+    ui_print "*********************************************************"
+    ui_print "! Apatch version is too old!"
+    ui_print "! Please update Apatch to latest version"
+    abort    "*********************************************************"
+  fi
+elif [ "$BOOTMODE" ] && [ "$MAGISK_VER_CODE" ]; then
+  ui_print "- Installing from Magisk app"
+  if [ "$MAGISK_VER_CODE" -lt "$MIN_MAGISK_VERSION" ]; then
+    ui_print "*********************************************************"
+    ui_print "! Magisk version is too old!"
+    ui_print "! Please update Magisk to latest version"
+    abort    "*********************************************************"
+  fi
+else
+  ui_print "*********************************************************"
+  ui_print "! Install from recovery is not supported"
+  ui_print "! Please install from KernelSU or Magisk app"
+  abort    "*********************************************************"
 fi
 
 loop_setup() {
