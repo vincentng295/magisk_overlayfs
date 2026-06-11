@@ -79,25 +79,6 @@ su -mm -c magic_remount_rw
 su -mm -c magic_remount_ro
 ```
 
-
-## Overlayfs-based Magisk module
-
-- If you want to use overlayfs mount for your module, add these line to the end of `customize.sh`:
-
-```bash
-OVERLAY_IMAGE_EXTRA=0     # number of kb need to be added to overlay.img
-OVERLAY_IMAGE_SHRINK=true # shrink overlay.img or not?
-INCLUDE_MAGIC_MOUNT=false # enable legacy Magisk mount
-
-# Only use OverlayFS if Magisk_OverlayFS is installed
-if [ -f "/data/adb/modules/magisk_overlayfs/util_functions.sh" ] && \
-    /data/adb/modules/magisk_overlayfs/overlayfs_system --test; then
-  ui_print "- Add support for overlayfs"
-  . /data/adb/modules/magisk_overlayfs/util_functions.sh
-  support_overlayfs && rm -rf "$MODPATH"/system
-fi
-```
-
 ## Bugreport
 
 - Please include `/cache/overlayfs.log`
