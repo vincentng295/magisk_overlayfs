@@ -1,8 +1,10 @@
-# Magisk Overlayfs
+# Magic Overlayfs
+
+> This module is reserved for certain legacy needs and won't be update further. If you are using KernelSU, please using [meta-overlayfs](https://github.com/KernelSU-Modules-Repo/meta-overlayfs) instead!
 
 On Android 10+, system partitions might no longer be able to remount as read-write. For devices use dynnamic partition, it is nearly impossible to modify system partiton as there is no space left. This module solves these problem by using OverlayFS. So what is OverlayFS? On [Wikipedia](https://en.m.wikipedia.org/wiki/OverlayFS):
 
-> OverlayFS is a union mount filesystem implementation for Linux. It combines multiple different underlying mount points into one, resulting in single directory structure that contains underlying files and sub-directories from all sources. Common applications overlay a read/write partition over a read-only partition, such as with LiveCDs and IoT devices with limited flash memory write cycles.
+OverlayFS is a union mount filesystem implementation for Linux. It combines multiple different underlying mount points into one, resulting in single directory structure that contains underlying files and sub-directories from all sources. Common applications overlay a read/write partition over a read-only partition, such as with LiveCDs and IoT devices with limited flash memory write cycles.
 
 Benefits of using overlayfs for system partitions:
 
