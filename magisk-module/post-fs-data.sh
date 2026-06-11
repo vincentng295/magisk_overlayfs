@@ -66,11 +66,6 @@ for i in /data/adb/modules/*; do
             fi
             num="$((num+1))"
         fi
-        if [ "$KSU" == "true" ]; then
-            mkdir -p "$MODULEMNT/$num"
-            mount --bind "$i" "$MODULEMNT/$num"
-            num="$((num+1))"
-        fi
     fi
 done
 
